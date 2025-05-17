@@ -1,0 +1,111 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Equipos</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+<div class="container mt-4">
+    <h2 class="mb-4">Lista de Equipos</h2>
+
+    <!-- Filtros -->
+    <form method="get" class="row g-3 mb-4">
+        <div class="col-md-3">
+            <label class="form-label">Sede</label>
+            <select name="sede" class="form-select">
+                <option value="">Todas</option>
+                {% for sede in sedes %}
+                    <option value="{{ sede.id }}" {% if filtros.sede == sede.id|stringformat:"s" %}selected{% endif %}>{{ sede.nombre }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Dependencia</label>
+            <select name="dependencia" class="form-select">
+                <option value="">Todas</option>
+                {% for d in dependencias %}
+                    <option value="{{ d.id }}" {% if filtros.dependencia == d.id|stringformat:"s" %}selected{% endif %}>{{ d.nombre }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Salón</label>
+            <select name="salon" class="form-select">
+                <option value="">Todos</option>
+                {% for s in salones %}
+                    <option value="{{ s.id }}" {% if filtros.salon == s.id|stringformat:"s" %}selected{% endif %}>{{ s.nombre }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-2">
+            <label class="form-label">Tipo</label>
+            <select name="tipo" class="form-select">
+                <option value="">Todos</option>
+                <option value="PC" {% if filtros.tipo == "PC" %}selected{% endif %}>Computador</option>
+                <option value="LT" {% if filtros.tipo == "LT" %}selected{% endif %}>Portátil</option>
+            </select>
+        </div>
+        <div class="col-md-1 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+        </div>
+    </form>
+
+    <!-- Tabla de equipos -->
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>Tipo</th>
+                    <th>Marca</th>
+                    <th>Modelo</th>
+                    <th>Serial</th>
+                    <th>Procesador</th>
+                    <th>RAM</th>
+                    <th>Disco</th>
+                    <th>Sistema</th>
+                    <th>Salón</th>
+                    <th>Dependencia</th>
+                    <th>Asignado a</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for equipo in equipos %}
+                    <tr>
+                        <td>{{ equipo.get_tipo_display }}</td>
+                        <td>{{ equipo.marca }}</td>
+                        <td>{{ equipo.modelo }}</td>
+                        <td>{{ equipo.serial }}</td>
+                        <td>{{ equipo.procesador }}</td>
+                        <td>{{ equipo.ram }}</td>
+                        <td>{{ equipo.disco_duro }}</td>
+                        <td>{{ equipo.sistema_operativo }}</td>
+                        <td>
+                            {% if equipo.salon %}
+                                {{ equipo.salon.nombre }}
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if equipo.dependencia %}
+                                {{ equipo.dependencia.nombre }}
+                            {% elif equipo.salon %}
+                                {{ equipo.salon.dependencia.nombre }}
+                            {% endif %}
+                        </td>
+                        <td>{{ equipo.asignado_a }}</td>
+                        <td>
+                            <a href="{% url 'detalle_equipo' equipo.id %}" class="btn btn-sm btn-outline-info">Ver detalle</a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="12" class="text-center">No hay equipos encontrados.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>
